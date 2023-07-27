@@ -5,10 +5,6 @@
 IniPath := A_ScriptFullPath . ".ini"
 
 key_list := []
-modifier := ["LShift", "LAlt", "LControl"]
-is_shift := "0"
-is_ctrl := "0"
-is_alt := "0"
 marginX := 10
 marginY := 10
 idW := 30
@@ -64,7 +60,6 @@ StartButton:
 	Loop, Parse, KeyList, %A_Space%
 	{
 		key_list[A_Index] := A_LoopField
-        ;AHI.SubscribeKey(dev.id, GetKeySC(A_LoopField), true, Func("OnKeyInput"))
 	}
     AHI.SubscribeKeyboard(dev.id, true, Func("OnKeyInput").Bind(dev.id))
     Return
@@ -81,26 +76,23 @@ StopButton:
         GuiControl, Enable, % "RadioButton" i
     }
     Save()
+    key_list := []
     AHI.UnsubscribeKeyboard(dev.id)
-    Loop, Parse, KeyList, %A_Space%
-    {
-        ;AHI.UnsubscribeKey(dev.id, GetKeySC(A_LoopField))
-    }
     Return
 
 OnKeyInput(id, code, state) {
-    global key_list, is_shift, is_ctrl, is_alt, modifier, AHI, dev
+    global key_list, AHI, dev
   	scanCode := Format("{:x}", code)
 	keyName := GetKeyName("SC" scanCode)
     processed := 0
     if (keyName = "LShift") {
-        AHI.SendKeyEvent(dev.id, GetKeySC(keyName), state)
+        AHI.SendKeyEvent(dev.id, code, state)
         processed := 1
     } else if (keyName = "LAlt") {
-        AHI.SendKeyEvent(dev.id, GetKeySC(keyName), state)
+        AHI.SendKeyEvent(dev.id, code, state)
         processed := 1
     } else if (keyName = "LControl") {
-        AHI.SendKeyEvent(dev.id, GetKeySC(keyName), state)
+        AHI.SendKeyEvent(dev.id, code, state)
         processed := 1
     } else if (keyName = "Shift") {
         return
@@ -114,7 +106,7 @@ OnKeyInput(id, code, state) {
                 break
             }
         }
-        OutputDebug, %vkCode% %flags% %modifier% %key%`n
+        OutputDebug, %vkCode% %flags% %key%`n
     }
     if (processed = 0) {
         AHI.SendKeyEvent(dev.id, code, state)
