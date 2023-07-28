@@ -106,7 +106,7 @@ OnKeyInput(id, code, state) {
                 break
             }
         }
-        OutputDebug, %vkCode% %flags% %key%`n
+        OutputDebug, %scanCode% %keyName% %flags%`n
     }
     if (processed = 0) {
         AHI.SendKeyEvent(dev.id, code, state)
